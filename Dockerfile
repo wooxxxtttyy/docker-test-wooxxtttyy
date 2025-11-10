@@ -1,18 +1,13 @@
-FROM golang:1.24.2-alpine AS builder
+FROM python:3.9-alpine3.22
 
 WORKDIR /app
 
-COPY ./gateway/main.go .
-COPY ./go.mod .
+COPY requirements.txt .
 
-RUN go mod tidy
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-RUN go build -o gateway /app/main.go
+COPY . .
 
-FROM alpine:3.22
+EXPOSE 5000
 
-WORKDIR /app
-
-COPY --from=builder /app/gateway .
-
-CMD [ "/app/gateway" ]
+CMD ["python", "app.py"]
